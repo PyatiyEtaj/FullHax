@@ -6,8 +6,7 @@
 
 namespace Wh
 {
-#define WITH_DLL FALSE
-#if WITH_DLL
+/*
 	bool __wallhack = true;
 	LPDIRECT3DDEVICE9 __localTester = nullptr;
 	LPDIRECT3DDEVICE9 __dev = nullptr;
@@ -41,9 +40,8 @@ namespace Wh
 		fTmp __f = fTmp(__dip->OriginalOps);
 		__f();
 	}
-#else
 
-	//LPDIRECT3DDEVICE9 __localTester = nullptr;
+	LPDIRECT3DDEVICE9 __localTester = nullptr;*/
 	typedef struct
 	{
 		UINT Stride;
@@ -80,7 +78,7 @@ namespace Wh
 		fTmp __exit = fTmp(__wh->dip->OriginalOps);
 		__exit();
 	}
-#endif
+
 	// –аботает, но дает бан, через игру или две
 	WH* MakeWhDetour(void* hkFunc)
 	{
