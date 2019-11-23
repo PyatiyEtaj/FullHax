@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков\Patch31_0__28_3">
+      <UniqueIdentifier>{2df2a435-62a2-4867-815f-1bf8a010b9f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Patch31_0__28_3">
+      <UniqueIdentifier>{59007a69-49ca-4f34-a0ec-597b079fb228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\HookSetter">
+      <UniqueIdentifier>{1d0eac76-b4bc-4c70-be93-1f38d2bb4887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\D3DDrawText">
+      <UniqueIdentifier>{8de0e637-f253-4072-aade-d582da11e0c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\HitBox">
+      <UniqueIdentifier>{b5338cae-ec31-4bef-a879-dcd082e9a2fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\HitBox">
+      <UniqueIdentifier>{67815d60-68c0-4c85-be25-4f36428ad25b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\ForDebug">
+      <UniqueIdentifier>{059f54ef-5113-49df-8a11-b7e6f2bb8ac0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\ForDebug">
+      <UniqueIdentifier>{f84cf2a4-3473-4765-8fa5-fe33b3792e2e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Patcher.cpp">
+      <Filter>Исходные файлы\Patch31_0__28_3</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpfulFuncs.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="PatcherC.cpp">
+      <Filter>Исходные файлы\Patch31_0__28_3</Filter>
+    </ClCompile>
+    <ClCompile Include="HitBox.cpp">
+      <Filter>Исходные файлы\HitBox</Filter>
+    </ClCompile>
+    <ClCompile Include="ForDebug.cpp">
+      <Filter>Исходные файлы\ForDebug</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source.def">
+      <Filter>Исходные файлы</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="JustOneHeader.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="VMT.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </ClInclude>
+    <ClInclude Include="Patcher.h">
+      <Filter>Файлы заголовков\Patch31_0__28_3</Filter>
+    </ClInclude>
+    <ClInclude Include="HookSetter.h">
+      <Filter>Файлы заголовков\HookSetter</Filter>
+    </ClInclude>
+    <ClInclude Include="TextDrawer.h">
+      <Filter>Файлы заголовков\D3DDrawText</Filter>
+    </ClInclude>
+    <ClInclude Include="HelpfulFuncs.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="PatcherC.h">
+      <Filter>Файлы заголовков\Patch31_0__28_3</Filter>
+    </ClInclude>
+    <ClInclude Include="HitBox.h">
+      <Filter>Файлы заголовков\HitBox</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Wh.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Bh.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Esp.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ForDebug.h">
+      <Filter>Файлы заголовков\ForDebug</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
