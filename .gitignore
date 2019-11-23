@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+#logs
+*.log
+*.tlog
+
+# Builds
+[Rr]elease/
+[Dd]ebug/
+x64/
+.vs/
