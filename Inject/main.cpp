@@ -17,7 +17,7 @@ BOOL SetHook(HMODULE pDll, LPCSTR wndName)
 		return FALSE;
 	}
 
-	HHOOK hhook = SetWndHook(WH_GETMESSAGE, pDll, "HookProc", threadId);
+	HHOOK hhook = SetWndHook(/*WH_GETMESSAGE*/WH_CALLWNDPROC, pDll, "HookProc", threadId);
 
 	if (GetLastError() != 0)
 	{
@@ -27,7 +27,7 @@ BOOL SetHook(HMODULE pDll, LPCSTR wndName)
 	cout << "HOOK " << hhook << " have setted" << endl;
 
 	//system("pause");
-	Sleep(1000);
+	Sleep(5000);
 	if (hhook != NULL)
 	{
 		cout << "HOOK " << hhook << " released" << endl;

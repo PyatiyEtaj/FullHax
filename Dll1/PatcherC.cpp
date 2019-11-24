@@ -180,11 +180,14 @@ void AddABanchOfWpns(Patcher_c* p)
 
 void MakeDumpAllWpns(Patcher_c* p, std::string path)
 {
+	std::ofstream f(path);
 	for (int i = 0; i < 4000; i++)
 	{
 		auto ptr = (PBYTE)fGetWpnById(p->AdrOfGetWpnById)(i);
 		if (ptr == nullptr) continue;
-		auto s = path + std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "].bin";
-		MakeBin(ptr, sizeof(Weapon), s.c_str());
+		f << std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "]\n";
+		//auto s = path + std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "].bin";
+		//MakeBin(ptr, sizeof(Weapon), s.c_str());
 	}
+	f.close();
 }
