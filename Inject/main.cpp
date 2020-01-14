@@ -9,7 +9,7 @@ inline HHOOK SetWndHook(int hookType, HMODULE h, LPCSTR funcName, DWORD thread)
 	return SetWindowsHookEx(hookType, (HOOKPROC)GetProcAddress(h, funcName), h, thread);
 }
 
-bool SetHook(HMODULE pDll, LPCSTR wndName)
+HHOOK SetHook(HMODULE pDll, LPCSTR wndName)
 {
 	DWORD threadId = GetWindowThreadProcessId(FindWindow(NULL, wndName), NULL);
 	if (threadId == 0)
@@ -28,29 +28,23 @@ bool SetHook(HMODULE pDll, LPCSTR wndName)
 	}
 	cout << "HOOK " << hhook << " have setted" << endl;
 
-	//system("pause");
+	return hhook;
+}
+
+bool InjectCF()
+{
+	Sleep(10000);
+	HMODULE pDll = LoadLibraryA("Dll1.dll");
+	HHOOK hhook = SetHook(pDll, WND_NAME);
 	Sleep(10000);
 	if (hhook != NULL)
 	{
 		cout << "HOOK " << hhook << " released" << endl;
 		UnhookWindowsHookEx(hhook);
+		return true;
 	}
-	return true;
-}
 
-bool InjectCF()
-{
-	//HMODULE pDll = LoadLibraryA("injectionHelpDll.dll");
-	HMODULE pDll = LoadLibraryA("Dll1.dll");
-	//HMODULE pDll = LoadLibraryA("FunDll.dll");
-	SetLastError(0);
-
-	//BOOL res = SetHook(pDll, "RivaTunerStatisticsServer");
-	bool res = SetHook(pDll, WND_NAME);
-	//BOOL res = SetHook(pDll, "D3D9Test");
-
-	//cout << "RESULT : " << res << endl;
-	return res;
+	return false;
 }
 
 inline bool compare(size_t i, const char* p, size_t szpattern, const char* pattern)
