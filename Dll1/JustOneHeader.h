@@ -17,8 +17,8 @@
 // 2750 - model
 // 3644-3657 - FOV
 typedef struct _Weapon {
-	//BYTE data[0x4E18];
-	BYTE data[0x47A8];
+	//BYTE data[0x47A8];
+	BYTE data[0x4B90];
 	//BYTE data[0x5000];
 } Weapon, *PWeapon;
 

@@ -100,7 +100,7 @@ bool ForDebug::Dumping(std::vector<BYTE> bytes, std::string subPath, DWORD start
 				printf_s("Find pattern in %X\n", ptr);
 				PBYTE pBuffer = new BYTE[mbi.RegionSize];
 				ReadProcessMemory(hProc, mbi.BaseAddress, pBuffer, mbi.RegionSize, 0);
-				std::string name = "E://GamesMailRu//NewDumps//" + subPath + int_to_hex<DWORD>((DWORD)mbi.BaseAddress) + ".dll";
+				std::string name = "D://GamesMailRu//NewDumps//" + subPath + int_to_hex<DWORD>((DWORD)mbi.BaseAddress) + ".dll";
 				MakeBin(pBuffer, mbi.RegionSize, name.c_str());
 				delete[] pBuffer;
 			}

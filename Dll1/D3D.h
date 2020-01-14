@@ -9,6 +9,9 @@
 
 #define DRAW_TEXT true
 
+
+// по большей части тут старый код который нужно удалить
+
 namespace D3D
 {
 #define CROSSHIRE TRUE
@@ -201,22 +204,33 @@ namespace D3D
 		return f(pDev);
 	}*/	
 
+	struct forch
+	{
+		HookSetter* hs;
+		bool ison;
+	};
+
+	forch* ch;
+
 	HRESULT __stdcall hkEndSceneTestVer(LPDIRECT3DDEVICE9 pDev)
 	{
 		typedef HRESULT(__stdcall* es)(LPDIRECT3DDEVICE9);
-		es f = es(hsES->OriginalOps);
-		D3DVIEWPORT9 viewPort;
-		pDev->GetViewport(&viewPort);
-		long CenterX = viewPort.Width / 2;
-		long CenterY = viewPort.Height / 2;
-		D3DRECT rec1 = { CenterX - 8, CenterY, CenterX + 8 + 1, CenterY + 1 };
-		D3DRECT rec2 = { CenterX, CenterY - 8, CenterX + 1, CenterY + 8 + 1 };
-		pDev->Clear(1, &rec1, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 255, 255), 0, 0);
-		pDev->Clear(1, &rec2, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 255, 255), 0, 0);
-		D3DRECT rec3 = { CenterX - 2, CenterY, CenterX + 2 + 1, CenterY + 1 };
-		D3DRECT rec4 = { CenterX, CenterY - 2, CenterX + 1, CenterY + 2 + 1 };
-		pDev->Clear(1, &rec3, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 0, 0), 0, 0);
-		pDev->Clear(1, &rec4, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 0, 0), 0, 0);
+		es f = es(ch->hs->OriginalOps);
+		if (ch->ison)
+		{
+			D3DVIEWPORT9 viewPort;
+			pDev->GetViewport(&viewPort);
+			long CenterX = viewPort.Width / 2;
+			long CenterY = viewPort.Height / 2;
+			D3DRECT rec1 = { CenterX - 8, CenterY, CenterX + 8 + 1, CenterY + 1 };
+			D3DRECT rec2 = { CenterX, CenterY - 8, CenterX + 1, CenterY + 8 + 1 };
+			pDev->Clear(1, &rec1, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 255, 255), 0, 0);
+			pDev->Clear(1, &rec2, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 255, 255), 0, 0);
+			D3DRECT rec3 = { CenterX - 2, CenterY, CenterX + 2 + 1, CenterY + 1 };
+			D3DRECT rec4 = { CenterX, CenterY - 2, CenterX + 1, CenterY + 2 + 1 };
+			pDev->Clear(1, &rec3, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 0, 0), 0, 0);
+			pDev->Clear(1, &rec4, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 0, 0), 0, 0);
+		}
 
 		return f(pDev);
 	}

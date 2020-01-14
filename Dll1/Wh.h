@@ -48,6 +48,7 @@ namespace Wh
 		UINT Offset;
 		LPDIRECT3DVERTEXBUFFER9 Stream_Data;
 		HookSetter* dip;
+		bool IsOn;
 	}WH;
 	LPDIRECT3DDEVICE9 __pDev;
 	WH* __wh;
@@ -66,7 +67,7 @@ namespace Wh
 			//if (__wh->Stride >= 40 && __wh->Stride != 44)
 			if (__wh->Stride > 40)
 			{
-				__pDev->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
+				__pDev->SetRenderState(D3DRS_ZENABLE, __wh->IsOn);
 				__pDev->SetRenderState(D3DRS_FOGENABLE, false);
 				//__pDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 				//__pDev->SetRenderState(D3DRS_LIGHTING, false);
@@ -79,13 +80,13 @@ namespace Wh
 		__exit();
 	}
 
-	// –аботает, но дает бан, через игру или две
-	WH* MakeWhDetour(void* hkFunc)
+	WH* MakeWhDetour(const std::vector<int>& offs, void* hkFunc)
 	{
-		//__localTester = localTester;
+		DWORD cf = (DWORD)GetModuleHandleA("crossfire.exe");
 		__wh = (WH*)VirtualAlloc(NULL, sizeof(WH), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-		PBYTE ptr = __findPattern("\x8B\x07\xFF\x75\x18", 5, "crossfire.exe");
-		//__wh->dip = CrtHookSetter(ptr, (DWORD)&__hkDIP, 5);
+
+		PBYTE ptr = (PBYTE)(cf + offs[OffsEnum::DIPEngine]);//__findPattern("\x8B\x07\xFF\x75\x18", 5, "crossfire.exe");
+
 		__wh->dip = CrtHookSetter(ptr, (DWORD)hkFunc, 5);
 		SetHookSetter(__wh->dip);
 		return __wh;

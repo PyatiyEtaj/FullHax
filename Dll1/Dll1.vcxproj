@@ -168,8 +168,8 @@
     <ClCompile Include="ForDebug.cpp" />
     <ClCompile Include="HelpfulFuncs.cpp" />
     <ClCompile Include="HitBox.cpp" />
-    <ClCompile Include="Patcher.cpp" />
     <ClCompile Include="PatcherC.cpp" />
+    <ClCompile Include="ReaderWriterBin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source.def" />
@@ -182,8 +182,10 @@
     <ClInclude Include="HitBox.h" />
     <ClInclude Include="HookSetter.h" />
     <ClInclude Include="JustOneHeader.h" />
-    <ClInclude Include="Patcher.h" />
+    <ClInclude Include="OffsEnum.h" />
     <ClInclude Include="PatcherC.h" />
+    <ClInclude Include="protector.h" />
+    <ClInclude Include="ReaderWriterBin.h" />
     <ClInclude Include="Wh.h" />
     <ClInclude Include="TextDrawer.h" />
     <ClInclude Include="VMT.txt" />

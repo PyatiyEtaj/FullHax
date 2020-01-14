@@ -1,42 +1,44 @@
-#include "JustOneHeader.h"
-#include <unordered_map>
-
+#include "protector.h"
+#pragma warning(disable:4996)
 using namespace std;
+
+#define WND_NAME "CROSSFIRE"
 
 inline HHOOK SetWndHook(int hookType, HMODULE h, LPCSTR funcName, DWORD thread)
 {
 	return SetWindowsHookEx(hookType, (HOOKPROC)GetProcAddress(h, funcName), h, thread);
 }
 
-BOOL SetHook(HMODULE pDll, LPCSTR wndName)
+bool SetHook(HMODULE pDll, LPCSTR wndName)
 {
 	DWORD threadId = GetWindowThreadProcessId(FindWindow(NULL, wndName), NULL);
 	if (threadId == 0)
 	{
-		cerr << "window " << wndName << " doesn't running" << endl;
-		return FALSE;
+		MessageBox(GetForegroundWindow(), "crossfire doesn't running", "Error", MB_OK);
+		return false;
 	}
 
 	HHOOK hhook = SetWndHook(/*WH_GETMESSAGE*/WH_CALLWNDPROC, pDll, "HookProc", threadId);
 
 	if (GetLastError() != 0)
 	{
-		cerr << "something wrong --> " << GetLastError() << endl;
-		return FALSE;
+		std::string s = "something wrong --> " + GetLastError();
+		MessageBox(GetForegroundWindow(), s.c_str(), "Error", MB_OK);
+		return false;
 	}
 	cout << "HOOK " << hhook << " have setted" << endl;
 
 	//system("pause");
-	Sleep(5000);
+	Sleep(10000);
 	if (hhook != NULL)
 	{
 		cout << "HOOK " << hhook << " released" << endl;
 		UnhookWindowsHookEx(hhook);
 	}
-	return TRUE;
+	return true;
 }
 
-void InjectCF()
+bool InjectCF()
 {
 	//HMODULE pDll = LoadLibraryA("injectionHelpDll.dll");
 	HMODULE pDll = LoadLibraryA("Dll1.dll");
@@ -44,16 +46,77 @@ void InjectCF()
 	SetLastError(0);
 
 	//BOOL res = SetHook(pDll, "RivaTunerStatisticsServer");
-	BOOL res = SetHook(pDll, "CROSSFIRE");
+	bool res = SetHook(pDll, WND_NAME);
 	//BOOL res = SetHook(pDll, "D3D9Test");
 
-	cout << "RESULT : " << res << endl;
+	//cout << "RESULT : " << res << endl;
+	return res;
 }
+
+inline bool compare(size_t i, const char* p, size_t szpattern, const char* pattern)
+{
+	for (size_t j = 0; j < szpattern && i < i+szpattern; i++, j++)
+	{
+		if (p[i] != pattern[j]) return false;
+	}
+
+	return true;
+}
+
+int findpos(size_t sz, const char* p, size_t szpattern, const char* pattern)
+{
+	for (size_t i = 0; i < sz-szpattern-1; i++)
+	{
+		if (compare(i, p, szpattern, pattern))
+		{
+			return (int)i;
+		}
+	}
+
+	return -1;
+}
+
+void changing(const char* filename, const char* pattern, size_t szpattern, long res, int off)
+{
+	std::ifstream input(filename, std::ios::binary);
+	std::vector<char> buffer(std::istreambuf_iterator<char>(input), {});
+	input.close();
+	char* p = buffer.data();
+	int pos = findpos(buffer.size(), p, szpattern, pattern);
+	if (pos != -1)
+	{
+		FILE* f = fopen(filename, "r+b");
+		fseek(f, pos+off, SEEK_SET);
+		fputs((char*)&res, f);
+		fclose(f);
+		//printf("defender done!");
+		//Beep(600, 100);
+	}
+}
+
+void defender()
+{
+	char* name = cpuname();
+	long key = getkey(name);
+	changing("Dll1.dll", "\x81\xFF\x30\x20\x10\x00\x8B\x3D", 8, key, 2);
+}
+
 
 int main()
 {
-	InjectCF();
-	//system("pause");
-	//system("pause");
+	HWND hWnd = GetForegroundWindow();
+	ShowWindow(hWnd, SW_HIDE);
+	//defender();
+	while (true)
+	{
+		if (FindWindowA(NULL, WND_NAME) && InjectCF()) 
+			break;
+
+		if (GetAsyncKeyState(VK_SPACE) & 1)
+			break;
+
+		Sleep(200);
+	}
+
 	return 0;
 }

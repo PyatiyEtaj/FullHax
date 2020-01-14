@@ -1,7 +1,8 @@
 #include "PatcherC.h"
 
-Patcher_c* InitPatcher()
+/*Patcher_c* InitPatcher(const std::vector<int> &offs)
 {
+	HMODULE h = GetModuleHandleA("CShell.dll");
 	Patcher_c* p = (Patcher_c*)VirtualAlloc(NULL, sizeof(Patcher_c), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (!p) return NULL;
 
@@ -15,14 +16,14 @@ Patcher_c* InitPatcher()
 	p->NeedToDetour = (PBYTE*)VirtualAlloc(NULL, sizeof(PBYTE) * 5, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (!p->NeedToDetour) { free(p); return NULL; }
 
-	/*
+	
 	// старые зигзаги
-	PBYTE adr = p->AdrOfGetWpnById + 0x15DB1A;
-	p->NeedToDetour[0] = adr - 0x12;
-	p->NeedToDetour[1] = adr;
-	p->NeedToDetour[2] = adr + 0x5A8;
-	p->NeedToDetour[3] = adr + 0x20AB;
-	p->NeedToDetour[4] = adr - 0x10946;*/
+	//PBYTE adr = p->AdrOfGetWpnById + 0x15DB1A;
+	//p->NeedToDetour[0] = adr - 0x12;
+	//p->NeedToDetour[1] = adr;
+	//p->NeedToDetour[2] = adr + 0x5A8;
+	//p->NeedToDetour[3] = adr + 0x20AB;
+	//p->NeedToDetour[4] = adr - 0x10946;
 
 	PBYTE adr = p->AdrOfGetWpnById + 0x17F13A;
 	p->NeedToDetour[0] = adr - 0x12;
@@ -33,6 +34,29 @@ Patcher_c* InitPatcher()
 	//						       B19
 	//						       c5c
 	//						       B55
+	return p;
+}*/
+
+Patcher_c* InitPatcher(const std::vector<int>& offs)
+{
+	DWORD h = (DWORD)GetModuleHandleA("CShell.dll");
+	Patcher_c* p = (Patcher_c*)VirtualAlloc(NULL, sizeof(Patcher_c), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	if (!p) return NULL;
+
+	p->AllWpnsOriginals = (PWeapon*)VirtualAlloc(NULL, 4000 * sizeof(void*), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	p->AdrOfGetWpnById = (PBYTE)(h + offs[OffsEnum::SKGetWpn]);
+	if (!p->AdrOfGetWpnById) { free(p); return NULL; }
+
+	p->NeedToDetour = (PBYTE*)VirtualAlloc(NULL, sizeof(PBYTE) * 5, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	if (!p->NeedToDetour) { free(p); return NULL; }
+
+
+	//PBYTE adr = p->AdrOfGetWpnById + 0x17F13A;
+	p->NeedToDetour[0] = (PBYTE)(h + offs[OffsEnum::SKPatch2]);//adr - 0x12;
+	p->NeedToDetour[1] = (PBYTE)(h + offs[OffsEnum::SKPatch1]);
+	p->NeedToDetour[2] = (PBYTE)(h + offs[OffsEnum::SKPatch3]);
+	p->NeedToDetour[3] = (PBYTE)(h + offs[OffsEnum::SKPatch4]);
+	p->NeedToDetour[4] = (PBYTE)(h + offs[OffsEnum::SKPatch5]);
 	return p;
 }
 
@@ -81,8 +105,8 @@ void AddNewWpnByIds(Patcher_c* p, std::string path, bool izyMode)
 	}
 	else
 	{
-		lengths = { 0xB46, 0x2974 };//lengths = { 0xB46, 0x2874 };
-		parts = { 0xE  , 0x1E34 };//parts = { 0xE  , 0x25A4 };
+		lengths = { 0xB46, 0x2D38 };//lengths = { 0xB46, 0x2874 };
+		parts = { 0xE  , 0x1E58 };//parts = { 0xE  , 0x25A4 };
 	}
 	//----------
 	int16_t id_wpn, id_zamena;
@@ -128,7 +152,7 @@ void AddNewWpnTest(Patcher_c* p, std::string path)
 	memcpy_s(newOne + 0x2, sizeof(Weapon) - 2, p->AllWpnsOriginals[id_wpn]->data    + 0x2, sizeof(Weapon) - 2);
 	memcpy_s(src + 0x99F,  0x10, p->AllWpnsOriginals[id_wpn]->data + 0x99F,  0x10);
 	//memcpy_s(src + 0x1091, 0x16, p->AllWpnsOriginals[id_wpn]->data + 0x1091, 0x16);
-	memcpy_s(src + 0xE11, 0x16, p->AllWpnsOriginals[id_wpn]->data + 0xE11, 0x16);
+	memcpy_s(src + 0xE14, 0x16, p->AllWpnsOriginals[id_wpn]->data + 0xE14, 0x16);
 }
 
 void AddNewWpnRaw(Patcher_c* p, std::string path)
@@ -161,9 +185,9 @@ std::vector<std::string> Dir(std::string root, std::string pattern)
 
 void AddABanchOfWpns(Patcher_c* p)
 {
-	auto	dotT = Dir("Bytes//", "*.byids");
-	auto dotTest = Dir("Bytes//", "*.full_bytes");
-	auto     raw = Dir("Bytes//", "*.bytes");
+	auto	dotT = Dir("Bytes//", "*.semi.txt");
+	auto dotTest = Dir("Bytes//", "*.full.txt");
+	auto     raw = Dir("Bytes//", "*.raw.txt");
 	for (auto el : dotT)
 	{
 		AddNewWpnByIds(p, el, false);
@@ -178,16 +202,19 @@ void AddABanchOfWpns(Patcher_c* p)
 	}
 }
 
-void MakeDumpAllWpns(Patcher_c* p, std::string path)
+void MakeDumpAllWpns(Patcher_c* p, std::string path, bool full)
 {
-	std::ofstream f(path);
+	std::ofstream f(path + "weapons.txt");
 	for (int i = 0; i < 4000; i++)
 	{
 		auto ptr = (PBYTE)fGetWpnById(p->AdrOfGetWpnById)(i);
 		if (ptr == nullptr) continue;
 		f << std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "]\n";
-		//auto s = path + std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "].bin";
-		//MakeBin(ptr, sizeof(Weapon), s.c_str());
+		if (full)
+		{
+			auto s = path + "//wpnsdatas//" + std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "].data";
+			MakeBin(ptr, sizeof(Weapon), s.c_str());
+		}		
 	}
 	f.close();
 }

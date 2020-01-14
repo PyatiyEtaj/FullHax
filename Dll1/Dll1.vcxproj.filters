@@ -39,9 +39,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Patcher.cpp">
-      <Filter>Исходные файлы\Patch31_0__28_3</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -57,6 +54,9 @@
     <ClCompile Include="ForDebug.cpp">
       <Filter>Исходные файлы\ForDebug</Filter>
     </ClCompile>
+    <ClCompile Include="ReaderWriterBin.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source.def">
@@ -69,9 +69,6 @@
     </ClInclude>
     <ClInclude Include="VMT.txt">
       <Filter>Файлы ресурсов</Filter>
-    </ClInclude>
-    <ClInclude Include="Patcher.h">
-      <Filter>Файлы заголовков\Patch31_0__28_3</Filter>
     </ClInclude>
     <ClInclude Include="HookSetter.h">
       <Filter>Файлы заголовков\HookSetter</Filter>
@@ -102,6 +99,15 @@
     </ClInclude>
     <ClInclude Include="ForDebug.h">
       <Filter>Файлы заголовков\ForDebug</Filter>
+    </ClInclude>
+    <ClInclude Include="OffsEnum.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ReaderWriterBin.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="protector.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,12 +1,10 @@
 #pragma once
 #include "HelpfulFuncs.h"
+#include "OffsEnum.h"
 
-void* FindEsp(PBYTE adrOfGetWpnById = nullptr)
+void* FindEsp(const std::vector<int>& offs)
 {
-	PBYTE ptr = adrOfGetWpnById == nullptr ?
-		__findPattern("\x55\x8B\xEC\x51\xA1\x00\x00\x00\x00\x53\x8B\x5D\x08\x56", 14)
-		:
-		(adrOfGetWpnById + 0x869840);
-
+	DWORD h = (DWORD)GetModuleHandleA("CShell.dll");
+	PBYTE ptr = (PBYTE)(h + offs[OffsEnum::Esp]);
 	return ptr;
 }
