@@ -4,6 +4,39 @@ using namespace std;
 
 #define WND_NAME "CROSSFIRE"
 
+void GetMsgFromDllByPipe()
+{
+	HANDLE hPipe;
+	char buffer[1024];
+	DWORD dwRead;
+
+	hPipe = CreateNamedPipe(TEXT("\\\\.\\pipe\\pipe12332145"),
+		PIPE_ACCESS_DUPLEX,
+		PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,   // FILE_FLAG_FIRST_PIPE_INSTANCE is not needed but forces CreateNamedPipe(..) to fail if the pipe already exists...
+		1,
+		1024,
+		1024,
+		NMPWAIT_USE_DEFAULT_WAIT,
+		NULL);
+	bool done = false;
+	while (hPipe != INVALID_HANDLE_VALUE)
+	{
+		if (ConnectNamedPipe(hPipe, NULL) != FALSE)
+		{
+			while (ReadFile(hPipe, buffer, sizeof(buffer) - 1, &dwRead, NULL) != FALSE)
+			{
+				buffer[dwRead] = '\0';
+				done = !strcmp(buffer, "DONE");
+				if (done) break;
+			}
+		}
+
+		DisconnectNamedPipe(hPipe);
+		if (done) break;
+	}
+	CloseHandle(hPipe);
+}
+
 inline HHOOK SetWndHook(int hookType, HMODULE h, LPCSTR funcName, DWORD thread)
 {
 	return SetWindowsHookEx(hookType, (HOOKPROC)GetProcAddress(h, funcName), h, thread);
@@ -11,22 +44,26 @@ inline HHOOK SetWndHook(int hookType, HMODULE h, LPCSTR funcName, DWORD thread)
 
 HHOOK SetHook(HMODULE pDll, LPCSTR wndName)
 {
-	DWORD threadId = GetWindowThreadProcessId(FindWindow(NULL, wndName), NULL);
+	HWND cfwnd = FindWindowA(NULL, wndName);
+
+	DWORD threadId = GetWindowThreadProcessId(cfwnd, NULL);
 	if (threadId == 0)
 	{
 		MessageBox(GetForegroundWindow(), "crossfire doesn't running", "Error", MB_OK);
 		return false;
 	}
 
-	HHOOK hhook = SetWndHook(/*WH_GETMESSAGE*/WH_CALLWNDPROC, pDll, "HookProc", threadId);
+	HHOOK hhook = SetWndHook(WH_CALLWNDPROC, pDll, "HookProc", threadId);
 
 	if (GetLastError() != 0)
 	{
 		std::string s = "something wrong --> " + GetLastError();
-		MessageBox(GetForegroundWindow(), s.c_str(), "Error", MB_OK);
+		cout << s << endl;
+		//MessageBox(GetForegroundWindow(), s.c_str(), "Error", MB_OK);
 		return false;
 	}
 	cout << "HOOK " << hhook << " have setted" << endl;
+	SendMessage(cfwnd, WM_MOUSEMOVE, MK_LBUTTON, NULL);
 
 	return hhook;
 }
@@ -36,7 +73,8 @@ bool InjectCF()
 	Sleep(10000);
 	HMODULE pDll = LoadLibraryA("Dll1.dll");
 	HHOOK hhook = SetHook(pDll, WND_NAME);
-	Sleep(10000);
+	GetMsgFromDllByPipe();
+	Sleep(200);
 	if (hhook != NULL)
 	{
 		cout << "HOOK " << hhook << " released" << endl;
@@ -95,12 +133,12 @@ void defender()
 	changing("Dll1.dll", "\x81\xFF\x30\x20\x10\x00\x8B\x3D", 8, key, 2);
 }
 
-
 int main()
 {
 	HWND hWnd = GetForegroundWindow();
-	ShowWindow(hWnd, SW_HIDE);
+	//ShowWindow(hWnd, SW_HIDE);
 	//defender();
+	//SetWindowTextA(GetForegroundWindow(), "INJECTOR");
 	while (true)
 	{
 		if (FindWindowA(NULL, WND_NAME) && InjectCF()) 

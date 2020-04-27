@@ -37,6 +37,16 @@
 	return p;
 }*/
 
+size_t WEAPON_SIZE;
+
+size_t GetWeaponSize(PBYTE proc)
+{
+	PBYTE ptr = (PBYTE)fGetWpnById(proc)(1897);
+	PBYTE ptr2 = (PBYTE)fGetWpnById(proc)(1898);
+	//printf_s("%X %x %d\n", ptr2, ptr, size);
+	return static_cast<size_t>(ptr2 - ptr);
+}
+
 Patcher_c* InitPatcher(const std::vector<int>& offs)
 {
 	DWORD h = (DWORD)GetModuleHandleA("CShell.dll");
@@ -57,6 +67,12 @@ Patcher_c* InitPatcher(const std::vector<int>& offs)
 	p->NeedToDetour[2] = (PBYTE)(h + offs[OffsEnum::SKPatch3]);
 	p->NeedToDetour[3] = (PBYTE)(h + offs[OffsEnum::SKPatch4]);
 	p->NeedToDetour[4] = (PBYTE)(h + offs[OffsEnum::SKPatch5]);
+
+
+	WEAPON_SIZE = GetWeaponSize(p->AdrOfGetWpnById);
+	std::ofstream f("Bytes/WEAPON_SIZE.txt");
+	f << WEAPON_SIZE << "--" << sizeof(Weapon) << std::endl;
+	f.close();
 	return p;
 }
 
@@ -97,17 +113,9 @@ void* MakeAdrOfFunc(void* ptr, size_t sz)
 void AddNewWpnByIds(Patcher_c* p, std::string path, bool izyMode)
 {
 	// parts and them lengths
-	std::vector<DWORD> lengths, parts;
-	if (izyMode)
-	{
-		lengths = { 0x950, 0x40 , 0x240 , 0x480 , 0x20 };
-		parts = { 0xE  , 0xA30, 0x25A4, 0x29A0, 0x3640 };
-	}
-	else
-	{
-		lengths = { 0xB46, 0x2D38 };//lengths = { 0xB46, 0x2874 };
-		parts = { 0xE  , 0x1E58 };//parts = { 0xE  , 0x25A4 };
-	}
+	std::vector<DWORD>
+		  parts = { 0xE  , 0x1FA0 },//parts = { 0xE  , 0x1E58 };
+		lengths = { 0xB42, 0x3468 };//lengths = { 0xB46, 0x2874 };
 	//----------
 	int16_t id_wpn, id_zamena;
 	PBYTE src, newOne;
@@ -120,22 +128,14 @@ void AddNewWpnByIds(Patcher_c* p, std::string path, bool izyMode)
 
 	if (src == nullptr || newOne == nullptr) { printf_s("SOOOKA BLYAT!\n"); return; }
 
-	//memcpy_s(src, sizeof(Weapon), AllWpnsOriginals[id_wpn]->data, sizeof(Weapon));
 	for (int i = 0; i < lengths.size(); i++)
 	{
 		memcpy_s(src + parts[i], lengths[i], newOne + parts[i], lengths[i]);
 	}
-	/*
-	_pairWpn w = { src, AllWpnsOriginals[id_wpn] };
-	Changed[id_wpn] = w;
-
-	printf_s("changing: source = %s\n             new = %s\n", AllWpnsOriginals[id_wpn]->data + 0xE, src + 0xE);
-	printf_s("-------------------------------------------------\n");
-	*/
 }
 
 
-void AddNewWpnTest(Patcher_c* p, std::string path)
+void AddNewWpnTest(Patcher_c* p, std::string path, bool withoutPkm)
 {
 	int16_t id_wpn, id_zamena;
 	PBYTE src, newOne;
@@ -150,9 +150,11 @@ void AddNewWpnTest(Patcher_c* p, std::string path)
 
 	memcpy_s(   src + 0x2, sizeof(Weapon) - 2, p->AllWpnsOriginals[id_zamena]->data + 0x2, sizeof(Weapon) - 2);
 	memcpy_s(newOne + 0x2, sizeof(Weapon) - 2, p->AllWpnsOriginals[id_wpn]->data    + 0x2, sizeof(Weapon) - 2);
-	memcpy_s(src + 0x99F,  0x10, p->AllWpnsOriginals[id_wpn]->data + 0x99F,  0x10);
-	//memcpy_s(src + 0x1091, 0x16, p->AllWpnsOriginals[id_wpn]->data + 0x1091, 0x16);
-	memcpy_s(src + 0xE14, 0x16, p->AllWpnsOriginals[id_wpn]->data + 0xE14, 0x16);
+	memcpy_s(src + 0x990,  0x40, p->AllWpnsOriginals[id_wpn]->data + 0x990,  0x40);
+	memcpy_s(src + 0xEAD, 0x1C, p->AllWpnsOriginals[id_wpn]->data + 0xEAD, 0x1C);
+	if (withoutPkm)
+		memcpy_s(src + 0xDF0, 0x6C0, p->AllWpnsOriginals[id_wpn]->data + 0xDF0, 0x6C0);
+
 }
 
 void AddNewWpnRaw(Patcher_c* p, std::string path)
@@ -162,6 +164,30 @@ void AddNewWpnRaw(Patcher_c* p, std::string path)
 	if (id < 0 || id > 4000) return;
 	PBYTE src = (PBYTE)fGetWpnById(p->AdrOfGetWpnById)(id);
 	memcpy_s(src, sizeof(Weapon), zamena.data(), sizeof(Weapon));
+}
+
+void GM(Patcher_c* p, bool lifewithoutgrenade)
+{
+	auto setzero = [](PBYTE ptr, size_t sz)->void {
+		for (size_t i = 0; i < sz; i++)
+		{
+			*(ptr+ i) = 0;
+		}
+	};
+	DWORD offwpn = 0x22F0;
+	for (int i = 0; i < 4000; i++)
+	{
+		auto ptr = (PBYTE)fGetWpnById(p->AdrOfGetWpnById)(i);
+		if (ptr == nullptr) continue;
+		if (!strcmp((char*)(ptr + 0x99F), "grenade"))
+		{
+			if (lifewithoutgrenade) setzero(ptr + 0x3C0, 0x1D0);
+		}
+		else
+		{
+			setzero(ptr + offwpn, 0x20);
+		}
+	}
 }
 
 std::vector<std::string> Dir(std::string root, std::string pattern)
@@ -185,9 +211,10 @@ std::vector<std::string> Dir(std::string root, std::string pattern)
 
 void AddABanchOfWpns(Patcher_c* p)
 {
-	auto	dotT = Dir("Bytes//", "*.semi.txt");
-	auto dotTest = Dir("Bytes//", "*.full.txt");
-	auto     raw = Dir("Bytes//", "*.raw.txt");
+	auto	 dotT = Dir("Bytes//", "*.semi.txt");
+	auto  dotTest = Dir("Bytes//", "*.full.txt");
+	auto dotTest2 = Dir("Bytes//", "*.full2.txt");
+	auto      raw = Dir("Bytes//", "*.raw.txt");
 	for (auto el : dotT)
 	{
 		AddNewWpnByIds(p, el, false);
@@ -195,6 +222,10 @@ void AddABanchOfWpns(Patcher_c* p)
 	for (auto el : dotTest)
 	{
 		AddNewWpnTest(p, el);
+	}
+	for (auto el : dotTest2)
+	{
+		AddNewWpnTest(p, el, true);
 	}
 	for (auto el : raw)
 	{

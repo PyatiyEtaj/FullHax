@@ -12,16 +12,12 @@
 
 #define DEBUG TRUE
 
-// OFFSETS
-// 25A4 - texture
-// 2750 - model
-// 3644-3657 - FOV
 typedef struct _Weapon {
-	//BYTE data[0x47A8];
-	BYTE data[0x4B90];
-	//BYTE data[0x5000];
+	//BYTE data[0x53D8];
+	//BYTE data[0x6000]; // real size => 21512
+	BYTE data[21512]; // real size => 21512
 } Weapon, *PWeapon;
 
 typedef LPVOID(*fGetWpnById)(int16_t);
-typedef void  (WINAPI *fEsp)(int32_t __, int32_t flag);
+typedef void  (WINAPI *fEsp)(int32_t flag);
 typedef void  (*fEspCallEax)(BYTE*);

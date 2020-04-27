@@ -6,6 +6,53 @@
 
 namespace Wh
 {
+
+	typedef struct
+	{
+		UINT Stride;
+		UINT Offset;
+		LPDIRECT3DVERTEXBUFFER9 Stream_Data;
+		HookSetter* dip;
+		bool IsOn;
+	}WH;
+	LPDIRECT3DDEVICE9 __pDev;
+	WH* __wh;
+
+	void __hkDIP()
+	{
+		_asm
+		{
+			mov eax, dword ptr ds : [edi]
+			mov dword ptr ds : [__pDev] , eax
+		}
+
+		if (__pDev->GetStreamSource(0, &__wh->Stream_Data, &__wh->Offset, &__wh->Stride) == S_OK)
+		{
+			__wh->Stream_Data->Release();
+			if (__wh->Stride > 40)
+			{
+				__pDev->SetRenderState(D3DRS_ZENABLE, __wh->IsOn);
+				__pDev->SetRenderState(D3DRS_FOGENABLE, false);
+			}
+		}
+		typedef  void(*fTmp)();
+		fTmp __exit = fTmp(__wh->dip->OriginalOps);
+		__exit();
+	}
+
+	WH* MakeWhDetour(const std::vector<int>& offs, void* hkFunc)
+	{
+		DWORD cf = (DWORD)GetModuleHandleA("crossfire.exe");
+		__wh = (WH*)VirtualAlloc(NULL, sizeof(WH), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+
+		PBYTE ptr = (PBYTE)(cf + offs[OffsEnum::DIPEngine]);
+
+		__wh->dip = CrtHookSetter(ptr, (DWORD)hkFunc, 5);
+		SetHookSetter(__wh->dip);
+		return __wh;
+	}
+}
+
 /*
 	bool __wallhack = true;
 	LPDIRECT3DDEVICE9 __localTester = nullptr;
@@ -13,7 +60,7 @@ namespace Wh
 	UINT Offset = 0;
 	UINT Stride = 0;
 	LPDIRECT3DVERTEXBUFFER9 Stream_Data;
-	
+
 	void __hkDIP()
 	{
 		_asm
@@ -42,53 +89,3 @@ namespace Wh
 	}
 
 	LPDIRECT3DDEVICE9 __localTester = nullptr;*/
-	typedef struct
-	{
-		UINT Stride;
-		UINT Offset;
-		LPDIRECT3DVERTEXBUFFER9 Stream_Data;
-		HookSetter* dip;
-		bool IsOn;
-	}WH;
-	LPDIRECT3DDEVICE9 __pDev;
-	WH* __wh;
-
-	void __hkDIP()
-	{
-		_asm
-		{
-			mov eax, dword ptr ds : [edi]
-			mov dword ptr ds : [__pDev] , eax
-		}
-
-		if (__pDev->GetStreamSource(0, &__wh->Stream_Data, &__wh->Offset, &__wh->Stride) == S_OK)
-		{
-			__wh->Stream_Data->Release();
-			//if (__wh->Stride >= 40 && __wh->Stride != 44)
-			if (__wh->Stride > 40)
-			{
-				__pDev->SetRenderState(D3DRS_ZENABLE, __wh->IsOn);
-				__pDev->SetRenderState(D3DRS_FOGENABLE, false);
-				//__pDev->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-				//__pDev->SetRenderState(D3DRS_LIGHTING, false);
-				//__pDev->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_ARGB(255, 255, 255, 255));
-				//__pDev->SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
-			}
-		}
-		typedef  void(*fTmp)();
-		fTmp __exit = fTmp(__wh->dip->OriginalOps);
-		__exit();
-	}
-
-	WH* MakeWhDetour(const std::vector<int>& offs, void* hkFunc)
-	{
-		DWORD cf = (DWORD)GetModuleHandleA("crossfire.exe");
-		__wh = (WH*)VirtualAlloc(NULL, sizeof(WH), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-
-		PBYTE ptr = (PBYTE)(cf + offs[OffsEnum::DIPEngine]);//__findPattern("\x8B\x07\xFF\x75\x18", 5, "crossfire.exe");
-
-		__wh->dip = CrtHookSetter(ptr, (DWORD)hkFunc, 5);
-		SetHookSetter(__wh->dip);
-		return __wh;
-	}
-}
