@@ -3,6 +3,14 @@
 
 void HitBox::__valueChanging(PBYTE ptr, float x, float y, float z, float hboffset)
 {	
+	Node* node = (Node*)(ptr);
+	//node->RelativePosX = hboffset; // 0x28
+	//node->Radius = hboffset;
+	node->DimensionX = x; // 0x38
+	node->DimensionY = y; //
+	node->DimensionZ = z; //
+	/*
+	// OLD VERSION
 	LTVector* offset = (LTVector*)(ptr + 0x24);
 	offset->z = hboffset;
 
@@ -10,6 +18,7 @@ void HitBox::__valueChanging(PBYTE ptr, float x, float y, float z, float hboffse
 	v->x = x;
 	v->y = y;
 	v->z = z;
+	*/
 }
 
 HitBox::MyModelForHitBoxes* HitBox::HitBoxes(const std::vector<int>& offs, DWORD adrOhHook, float g_x, float g_y, float g_z, float s_x, float s_y, float s_z, float hboffset)
@@ -32,6 +41,12 @@ HitBox::MyModelForHitBoxes* HitBox::HitBoxes(const std::vector<int>& offs, DWORD
 	__valueChanging((PBYTE)f(1), s_x, s_y, s_z, hboffset);
 
 	return mymodels;
+}
+
+void HitBox::SetDetour(const std::vector<int>& offs, DWORD adrOhHook)
+{
+	DWORD h = (DWORD)GetModuleHandleA("CShell.dll");
+	DetourFunc((PBYTE)(h + offs[OffsEnum::HitBoxPatch]), adrOhHook);
 }
 
 

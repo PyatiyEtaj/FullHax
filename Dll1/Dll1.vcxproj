@@ -175,7 +175,9 @@
     <None Include="Source.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BasicPlayerInfo.h" />
     <ClInclude Include="Bh.h" />
+    <ClInclude Include="CLTClient.h" />
     <ClInclude Include="Esp.h" />
     <ClInclude Include="ForDebug.h" />
     <ClInclude Include="HelpfulFuncs.h" />
@@ -186,10 +188,13 @@
     <ClInclude Include="PatcherC.h" />
     <ClInclude Include="protector.h" />
     <ClInclude Include="ReaderWriterBin.h" />
+    <ClInclude Include="Skin.h" />
+    <ClInclude Include="Textures.h" />
     <ClInclude Include="Wh.h" />
     <ClInclude Include="TextDrawer.h" />
     <ClInclude Include="VMT.txt" />
     <ClInclude Include="D3D.h" />
+    <ClInclude Include="__HitBox.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,5 +13,10 @@ enum OffsEnum
 	HitBoxPatch = 8,
 	DIPEngine = 9,
 	Esp = 10,
-	Bh = 11
+	Bh = 11,
+	BPIGetById = 12,
+	BPIPatch = 13,
+	GetSkinById = 14,
+	GetTextureById = 15,
+	CLTClientThis = 16
 };

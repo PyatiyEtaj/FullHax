@@ -75,18 +75,12 @@ PBYTE FindPattern(const std::vector<BYTE>& pattern, PBYTE start, PBYTE end)
 	int middle = endI / 2;
 	for (; start < end; start++)
 	{
-		if (!(start[0] == pattern[0] || (pattern[0] == 0x0))) continue;
-		if (!(start[middle] == pattern[middle] || (pattern[middle] == 0x0))) { start += middle; continue; }
-		if (!(start[endI] == pattern[endI] || (pattern[endI] == 0x0))) { start += endI; continue; }
+		//if (!(start[0] == pattern[0] || (pattern[0] == 0x0))) continue;
+		//if (!(start[middle] == pattern[middle] || (pattern[middle] == 0x0))) { start += middle-1; continue; }
+		//if (!(start[endI] == pattern[endI] || (pattern[endI] == 0x0))) { start += endI-1; continue; }
 
-		if (__compare(pattern, start))
-		{
+		if (__compare(pattern, start)) 
 			return start;
-		}
-		else
-		{
-			start++;
-		}
 	}
 	return nullptr;
 }
@@ -131,6 +125,18 @@ PBYTE FindPatternInModule(
 	return nullptr;
 }
 
+PBYTE FindPatternLight(std::vector<BYTE> pattern, LPCSTR moduleName)
+{
+	HANDLE hProc = GetCurrentProcess();
+	MEMORY_BASIC_INFORMATION mbi;
+	SYSTEM_INFO si;
+	GetSystemInfo(&si);
+	MODULEINFO mInfo = GetModuleInfo(moduleName);
+	LPVOID start = mInfo.lpBaseOfDll;
+	LPVOID   end = (LPVOID)((DWORD)start + mInfo.SizeOfImage);
+	return FindPattern(pattern, (PBYTE)start, (PBYTE)end);
+}
+
 void MakeBin(PBYTE buff, SIZE_T sz, LPCSTR name)
 {
 	std::ofstream f(name, std::ios::binary);
@@ -165,4 +171,36 @@ void* CopyInMem(void* dest, void* source, size_t sz)
 	}
 
 	return NULL;
+}
+
+void PatchPtrInFunc(PBYTE adr, DWORD off, DWORD offFunc)
+{
+	DWORD adresOfP = (DWORD)((adr + off));
+	memcpy_s(adr + offFunc, 4, &adresOfP, 4);
+}
+
+void FuncMemerFixer::InitAdr(PBYTE& adr, PBYTE func, size_t countOfPtrs)
+{
+	sz = 0;
+	funcOffset = countOfPtrs * sizeof(void*);
+	while (*((PWORD)(func + sz++)) != 0xCCCC);
+	memcpy_s(adr + funcOffset, sz, func, sz);
+	adrOfFunc = adr + funcOffset;
+}
+
+void FuncMemerFixer::FixFuncInMem(PBYTE adr, const std::vector<DWORD>& ptrs, const std::vector<DWORD>& needToFind)
+{
+	size_t localsz = sz + funcOffset;
+	for (int i = 0; i < ptrs.size(); i++) {
+		DWORD pos = i * sizeof(void*),
+			posOfFind = funcOffset;
+		while (posOfFind < (localsz - 4))
+		{
+			if (*((PDWORD)(adr + posOfFind)) == needToFind[i])
+			{
+				PatchPtrInFunc(adr, pos, posOfFind);
+			}
+			posOfFind++;
+		}
+	}
 }

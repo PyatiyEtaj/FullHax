@@ -50,7 +50,7 @@ HHOOK SetHook(HMODULE pDll, LPCSTR wndName)
 	if (threadId == 0)
 	{
 		MessageBox(GetForegroundWindow(), "crossfire doesn't running", "Error", MB_OK);
-		return false;
+		return NULL;
 	}
 
 	HHOOK hhook = SetWndHook(WH_CALLWNDPROC, pDll, "HookProc", threadId);
@@ -59,8 +59,7 @@ HHOOK SetHook(HMODULE pDll, LPCSTR wndName)
 	{
 		std::string s = "something wrong --> " + GetLastError();
 		cout << s << endl;
-		//MessageBox(GetForegroundWindow(), s.c_str(), "Error", MB_OK);
-		return false;
+		return NULL;
 	}
 	cout << "HOOK " << hhook << " have setted" << endl;
 	SendMessage(cfwnd, WM_MOUSEMOVE, MK_LBUTTON, NULL);
@@ -82,7 +81,7 @@ bool InjectCF()
 		return true;
 	}
 
-	return false;
+	return true;
 }
 
 inline bool compare(size_t i, const char* p, size_t szpattern, const char* pattern)
@@ -133,6 +132,41 @@ void defender()
 	changing("Dll1.dll", "\x81\xFF\x30\x20\x10\x00\x8B\x3D", 8, key, 2);
 }
 
+HHOOK InstallHook(HMODULE pDll, LPCSTR wndName)
+{
+	HWND cfwnd = FindWindowA(NULL, wndName);
+
+	HHOOK hhook = SetWndHook(5, pDll, "HookProc", 0);
+
+	if (GetLastError() != 0)
+	{
+		std::string s = "something wrong --> " + GetLastError();
+		cout << s << endl;
+		return NULL;
+	}
+	cout << "HOOK " << hhook << " have setted" << endl;
+	SendMessage(cfwnd, WM_MOUSEMOVE, MK_LBUTTON, NULL);
+
+	return hhook;
+}
+
+void InjectionGlobalHook()
+{
+	Sleep(10000);
+
+	HMODULE pDll = LoadLibraryA("Dll1.dll");
+	HHOOK hhk = InstallHook(pDll, WND_NAME);
+	if (hhk)
+	{
+		system("pause");
+		cout << "HOOK " << hhk << " released" << endl;
+		UnhookWindowsHookEx(hhk);
+	}
+	else
+		cout << "HOOK hasn't been setted" << endl;
+	system("pause");
+}
+
 int main()
 {
 	HWND hWnd = GetForegroundWindow();
@@ -141,8 +175,10 @@ int main()
 	//SetWindowTextA(GetForegroundWindow(), "INJECTOR");
 	while (true)
 	{
-		if (FindWindowA(NULL, WND_NAME) && InjectCF()) 
+		if (FindWindowA(NULL, WND_NAME) && InjectCF()) {
+			//InjectionGlobalHook();
 			break;
+		}
 
 		if (GetAsyncKeyState(VK_SPACE) & 1)
 			break;

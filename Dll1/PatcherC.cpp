@@ -154,7 +154,8 @@ void AddNewWpnTest(Patcher_c* p, std::string path, bool withoutPkm)
 	memcpy_s(src + 0xEAD, 0x1C, p->AllWpnsOriginals[id_wpn]->data + 0xEAD, 0x1C);
 	if (withoutPkm)
 		memcpy_s(src + 0xDF0, 0x6C0, p->AllWpnsOriginals[id_wpn]->data + 0xDF0, 0x6C0);
-
+	//*(float*)(src + 3088) = 0.0001f;//damageperdistance
+	//*(float*)(src + 4348) = 0.0f;//speedpenalty
 }
 
 void AddNewWpnRaw(Patcher_c* p, std::string path)
@@ -174,12 +175,12 @@ void GM(Patcher_c* p, bool lifewithoutgrenade)
 			*(ptr+ i) = 0;
 		}
 	};
-	DWORD offwpn = 0x22F0;
+	DWORD offwpn = 0x2445;
 	for (int i = 0; i < 4000; i++)
 	{
 		auto ptr = (PBYTE)fGetWpnById(p->AdrOfGetWpnById)(i);
 		if (ptr == nullptr) continue;
-		if (!strcmp((char*)(ptr + 0x99F), "grenade"))
+		if (strcmp((char*)(ptr + 0x99F), "grenade") == 0)
 		{
 			if (lifewithoutgrenade) setzero(ptr + 0x3C0, 0x1D0);
 		}

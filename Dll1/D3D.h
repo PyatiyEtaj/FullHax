@@ -202,7 +202,7 @@ namespace D3D
 #endif
 	end_es:
 		return f(pDev);
-	}*/	
+	}*/
 
 	struct forch
 	{
@@ -211,6 +211,13 @@ namespace D3D
 	};
 
 	forch* ch;
+
+	forch* InitCrossHair(void* hook) {
+		ch = (forch*)malloc(sizeof(forch));
+		ch->hs = CrtHookSetter(_oEndScene, (DWORD)hook, 7);
+		ch->ison = true;
+		return ch;
+	}
 
 	HRESULT __stdcall hkEndSceneTestVer(LPDIRECT3DDEVICE9 pDev)
 	{
@@ -237,6 +244,26 @@ namespace D3D
 
 	////////////////////////////////////////////////
 	
+	std::string OutputString = "Hello boyz";
+
+	HRESULT __stdcall hkEndScene(LPDIRECT3DDEVICE9 pDev)
+	{
+		typedef HRESULT(__stdcall* es)(LPDIRECT3DDEVICE9);
+		es f = es(hsES->OriginalOps);
+		if (!IsTdCreated)
+		{
+			//printf_s("--< Re//Create UI >--\n");
+			td = CrtD3DTextDrawer(pDev, 50, 300, D3DCOLOR_ARGB(255, 255, 255, 0), "Consolas", 18);
+			IsTdCreated = true;
+			ShowMenu = true;
+		}
+		if (ShowMenu)
+		{
+			xDrawText(td, OutputString.c_str());
+		}
+		return f(pDev);
+	}
+
 	void Constructor(LPCSTR wndName)
 	{
 		typedef LPDIRECT3D9(__stdcall*D3DCreate)(UINT);
@@ -269,7 +296,7 @@ namespace D3D
 		_oEndScene = (PBYTE)vtable[_endScene];
 		
 		//hsDIP = CrtHookSetter(_oDrawIP  , (DWORD)&hkDrawPrimitive, 5);
-		//hsES  = CrtHookSetter(_oEndScene, (DWORD)&hkEndSceneTestVer, 7);
+		//hsES  = CrtHookSetter(_oEndScene, (DWORD)&hkEndScene, 7);
 		//SetHookSetter(hsDIP);
 		//SetHookSetter(hsES);
 		ppReturnedDeviceInterface->Release();
@@ -282,7 +309,7 @@ namespace D3D
 	void Destructor()
 	{
 		//memcpy_s(_oDrawIP, 5, OriginalCode, 5);
-		UnsetHook(hsDIP);
+		//UnsetHook(hsDIP);
 		UnsetHook(hsES);
 	}
 

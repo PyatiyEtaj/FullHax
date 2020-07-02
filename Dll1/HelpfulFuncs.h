@@ -21,6 +21,11 @@ PBYTE FindPatternInModule(
 	DWORD startAdr = 0, DWORD endAdr = 0
 );
 
+PBYTE FindPatternLight(
+	std::vector<BYTE> pattern,
+	LPCSTR moduleName
+);
+
 void MakeBin(PBYTE buff, SIZE_T sz, LPCSTR name);
 
 void CopePtrToAdr(void* ptr, PBYTE adr, DWORD off);
@@ -28,3 +33,12 @@ void CopePtrToAdr(void* ptr, PBYTE adr, DWORD off);
 void CopePtrToAdr(void* ptr, PBYTE adr, DWORD off1, DWORD offFunc);
 
 void* CopyInMem(void* dest, void* source, size_t sz);
+
+class FuncMemerFixer {
+public:
+	size_t sz;
+	size_t funcOffset;
+	PBYTE adrOfFunc;
+	void InitAdr(PBYTE& adr, PBYTE func, size_t countOfPtrs);
+	void FixFuncInMem(PBYTE adr, const std::vector<DWORD>& ptrs, const std::vector<DWORD>& needToFind);
+};

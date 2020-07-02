@@ -19,9 +19,9 @@ D3DTextDrawer* CrtD3DTextDrawer(LPDIRECT3DDEVICE9 pDev, int x, int y, D3DCOLOR c
 	{
 		RECT einheit;
 		einheit.left = x;
-		einheit.right = x + 200;
+		einheit.right = x + 500;
 		einheit.top = y;
-		einheit.bottom = einheit.top + 100;
+		einheit.bottom = einheit.top + 200;
 		td->Rect = einheit;
 		td->Color = color;
 		td->Size = Size;
