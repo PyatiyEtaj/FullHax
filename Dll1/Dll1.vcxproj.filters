@@ -57,6 +57,9 @@
     <ClCompile Include="ReaderWriterBin.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="WithUnload.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source.def">

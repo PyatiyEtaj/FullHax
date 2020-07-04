@@ -250,7 +250,22 @@ namespace D3D
 	{
 		typedef HRESULT(__stdcall* es)(LPDIRECT3DDEVICE9);
 		es f = es(hsES->OriginalOps);
-		if (!IsTdCreated)
+		if (IsDrawCH)
+		{
+			D3DVIEWPORT9 viewPort;
+			pDev->GetViewport(&viewPort);
+			long CenterX = viewPort.Width / 2;
+			long CenterY = viewPort.Height / 2;
+			D3DRECT rec1 = { CenterX - 8, CenterY, CenterX + 8 + 1, CenterY + 1 };
+			D3DRECT rec2 = { CenterX, CenterY - 8, CenterX + 1, CenterY + 8 + 1 };
+			pDev->Clear(1, &rec1, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 255, 255), 0, 0);
+			pDev->Clear(1, &rec2, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 255, 255), 0, 0);
+			D3DRECT rec3 = { CenterX - 2, CenterY, CenterX + 2 + 1, CenterY + 1 };
+			D3DRECT rec4 = { CenterX, CenterY - 2, CenterX + 1, CenterY + 2 + 1 };
+			pDev->Clear(1, &rec3, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 0, 0), 0, 0);
+			pDev->Clear(1, &rec4, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 0, 0), 0, 0);
+		}
+		/*if (!IsTdCreated)
 		{
 			//printf_s("--< Re//Create UI >--\n");
 			td = CrtD3DTextDrawer(pDev, 50, 300, D3DCOLOR_ARGB(255, 255, 255, 0), "Consolas", 18);
@@ -260,7 +275,7 @@ namespace D3D
 		if (ShowMenu)
 		{
 			xDrawText(td, OutputString.c_str());
-		}
+		}*/
 		return f(pDev);
 	}
 
@@ -296,9 +311,9 @@ namespace D3D
 		_oEndScene = (PBYTE)vtable[_endScene];
 		
 		//hsDIP = CrtHookSetter(_oDrawIP  , (DWORD)&hkDrawPrimitive, 5);
-		//hsES  = CrtHookSetter(_oEndScene, (DWORD)&hkEndScene, 7);
+		hsES  = CrtHookSetter(_oEndScene, (DWORD)&hkEndScene, 7);
 		//SetHookSetter(hsDIP);
-		//SetHookSetter(hsES);
+		SetHookSetter(hsES);
 		ppReturnedDeviceInterface->Release();
 		pD3D->Release();
 		IsCreated = true;

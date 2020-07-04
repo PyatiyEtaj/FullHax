@@ -170,6 +170,7 @@
     <ClCompile Include="HitBox.cpp" />
     <ClCompile Include="PatcherC.cpp" />
     <ClCompile Include="ReaderWriterBin.cpp" />
+    <ClCompile Include="WithUnload.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source.def" />
