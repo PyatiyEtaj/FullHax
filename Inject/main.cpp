@@ -122,7 +122,7 @@ void InjectionGlobalHook()
 
 int main()
 {
-	HWND hWnd = GetForegroundWindow();
+	//HWND hWnd = GetForegroundWindow();
 	//ShowWindow(hWnd, SW_HIDE);
 	//defender();
 	//SetWindowTextA(GetForegroundWindow(), "INJECTOR");

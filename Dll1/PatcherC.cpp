@@ -151,9 +151,9 @@ void AddNewWpnTest(Patcher_c* p, std::string path, bool withoutPkm)
 	memcpy_s(   src + 0x2, sizeof(Weapon) - 2, p->AllWpnsOriginals[id_zamena]->data + 0x2, sizeof(Weapon) - 2);
 	memcpy_s(newOne + 0x2, sizeof(Weapon) - 2, p->AllWpnsOriginals[id_wpn]->data    + 0x2, sizeof(Weapon) - 2);
 	memcpy_s(src + 0x990,  0x40, p->AllWpnsOriginals[id_wpn]->data + 0x990,  0x40);
-	memcpy_s(src + 0xEAD, 0x1C, p->AllWpnsOriginals[id_wpn]->data + 0xEAD, 0x1C);
+	memcpy_s(src + 0xEBD, 0x1C, p->AllWpnsOriginals[id_wpn]->data + 0xEBD, 0x1C);
 	if (withoutPkm)
-		memcpy_s(src + 0xDF0, 0x6C0, p->AllWpnsOriginals[id_wpn]->data + 0xDF0, 0x6C0);
+		memcpy_s(src + 0xDF0, 0x6D0, p->AllWpnsOriginals[id_wpn]->data + 0xDF0, 0x6D0);
 	//*(float*)(src + 3088) = 0.0001f;//damageperdistance
 	//*(float*)(src + 4348) = 0.0f;//speedpenalty
 }

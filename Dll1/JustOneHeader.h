@@ -15,7 +15,8 @@
 typedef struct _Weapon {
 	//BYTE data[0x53D8];
 	//BYTE data[0x6000]; // real size => 21512
-	BYTE data[21512]; // real size => 21512
+	//BYTE data[21512]; // real size => 21512
+	BYTE data[22104];
 } Weapon, *PWeapon;
 
 typedef LPVOID(*fGetWpnById)(int16_t);
