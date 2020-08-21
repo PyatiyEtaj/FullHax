@@ -8,6 +8,8 @@
 namespace Wh
 {
 
+	bool espFlag = false;
+	oGlowESP esp = NULL;
 	typedef struct
 	{
 		UINT Stride;
@@ -32,7 +34,7 @@ namespace Wh
 			__wh->Stream_Data->Release();
 			if (__wh->Stride > 40)
 			{
-				__pDev->SetRenderState(D3DRS_ZENABLE, __wh->IsOn);
+				__pDev->SetRenderState(D3DRS_ZENABLE, !__wh->IsOn);
 				__pDev->SetRenderState(D3DRS_FOGENABLE, false);
 			}
 		}

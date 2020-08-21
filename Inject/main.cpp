@@ -68,7 +68,6 @@ HHOOK SetHook(HMODULE pDll, LPCSTR wndName)
 
 bool InjectCF()
 {
-	Sleep(10000);
 	HMODULE pDll = LoadLibraryA("Dll1.dll");
 	HHOOK hhook = SetHook(pDll, WND_NAME);
 	GetMsgFromDllByPipe();
@@ -88,16 +87,16 @@ bool InjectCF()
 HHOOK InstallHook(HMODULE pDll, LPCSTR wndName)
 {
 	HWND cfwnd = FindWindowA(NULL, wndName);
-
-	HHOOK hhook = SetWndHook(5, pDll, "HookProc", 0);
+	DWORD threadId = GetWindowThreadProcessId(cfwnd, NULL);
+	
+	HHOOK hhook = SetWndHook(WH_CALLWNDPROC, pDll, "HookProc", threadId);
 
 	if (GetLastError() != 0)
 	{
-		std::string s = "something wrong --> " + GetLastError();
-		cout << s << endl;
+		cout << "код ошибки: " + GetLastError() << endl;
 		return NULL;
 	}
-	cout << "HOOK " << hhook << " have setted" << endl;
+	cout << "загружено!" << endl;
 	SendMessage(cfwnd, WM_MOUSEMOVE, MK_LBUTTON, NULL);
 
 	return hhook;
@@ -105,30 +104,27 @@ HHOOK InstallHook(HMODULE pDll, LPCSTR wndName)
 
 void InjectionGlobalHook()
 {
-	Sleep(10000);
+	Sleep(3500);
 
 	HMODULE pDll = LoadLibraryA("Dll1.dll");
 	HHOOK hhk = InstallHook(pDll, WND_NAME);
 	if (hhk)
 	{
-		system("pause");
-		cout << "HOOK " << hhk << " released" << endl;
+		cout << "нажмите ENTER для выгрузки (это приведёт к крашу игры)" << endl;
+		int k = getchar();
+		cout << "выгружено!" << endl;
 		UnhookWindowsHookEx(hhk);
 	}
-	else
-		cout << "HOOK hasn't been setted" << endl;
+	else cout << "свяжитесь с кодером!" << endl;
 	system("pause");
 }
 
 int main()
 {
-	//HWND hWnd = GetForegroundWindow();
-	//ShowWindow(hWnd, SW_HIDE);
-	//defender();
-	//SetWindowTextA(GetForegroundWindow(), "INJECTOR");
+	setlocale(LC_ALL, "ru-RU");
 	while (true)
 	{
-		if (FindWindowA(NULL, WND_NAME) /*&& InjectCF()*/) {
+		if (FindWindowA(NULL, WND_NAME)) {
 			InjectionGlobalHook();
 			break;
 		}

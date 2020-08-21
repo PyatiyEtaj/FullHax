@@ -128,7 +128,6 @@ PBYTE FindPatternInModule(
 PBYTE FindPatternLight(std::vector<BYTE> pattern, LPCSTR moduleName)
 {
 	HANDLE hProc = GetCurrentProcess();
-	MEMORY_BASIC_INFORMATION mbi;
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 	MODULEINFO mInfo = GetModuleInfo(moduleName);
@@ -191,7 +190,7 @@ void FuncMemerFixer::InitAdr(PBYTE& adr, PBYTE func, size_t countOfPtrs)
 void FuncMemerFixer::FixFuncInMem(PBYTE adr, const std::vector<DWORD>& ptrs, const std::vector<DWORD>& needToFind)
 {
 	size_t localsz = sz + funcOffset;
-	for (int i = 0; i < ptrs.size(); i++) {
+	for (size_t i = 0; i < ptrs.size(); i++) {
 		DWORD pos = i * sizeof(void*),
 			posOfFind = funcOffset;
 		while (posOfFind < (localsz - 4))

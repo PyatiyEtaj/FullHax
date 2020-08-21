@@ -2,6 +2,7 @@
 #include "HookSetter.h"
 #include "JustOneHeader.h"
 #include "TextDrawer.h"
+#include <d3d9.h>
 //#include <d3dx9.h>
 
 //#pragma comment(lib, "d3d9")
@@ -34,7 +35,7 @@ namespace D3D
 	bool IsCreated = false;
 	bool WH = false, GM = false, FullBright = false, Asus = false, BH = false, Esp = false;
 	bool AreTexturesCreated = false;
-	UINT IsTexturing = 0;
+	UINT IsTexturing = 1;
 
 	LPDIRECT3DTEXTURE9 _textureBlue = nullptr;
 	LPDIRECT3DTEXTURE9 _textureYellow = nullptr;
@@ -85,7 +86,7 @@ namespace D3D
 	HookSetter * hsES;
 	D3DTextDrawer* td;
 	bool IsTdCreated = false;
-	bool ShowMenu = true;
+	bool ShowMenu = false;
 	bool IsSoundOff = false;
 
 	HRESULT __stdcall hkDrawPrimitive(
@@ -244,7 +245,7 @@ namespace D3D
 
 	////////////////////////////////////////////////
 	
-	std::string OutputString = "Hello boyz";
+	std::string OutputString = "build date: 17.08.2020";
 
 	HRESULT __stdcall hkEndScene(LPDIRECT3DDEVICE9 pDev)
 	{
@@ -264,18 +265,19 @@ namespace D3D
 			D3DRECT rec4 = { CenterX, CenterY - 2, CenterX + 1, CenterY + 2 + 1 };
 			pDev->Clear(1, &rec3, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 0, 0), 0, 0);
 			pDev->Clear(1, &rec4, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 255, 0, 0), 0, 0);
+			
 		}
-		/*if (!IsTdCreated)
-		{
-			//printf_s("--< Re//Create UI >--\n");
-			td = CrtD3DTextDrawer(pDev, 50, 300, D3DCOLOR_ARGB(255, 255, 255, 0), "Consolas", 18);
-			IsTdCreated = true;
-			ShowMenu = true;
-		}
-		if (ShowMenu)
-		{
-			xDrawText(td, OutputString.c_str());
-		}*/
+		//if (!IsTdCreated)
+		//{
+		//	//printf_s("--< Re//Create UI >--\n");
+		//	td = CrtD3DTextDrawer(pDev, 50, 300, D3DCOLOR_ARGB(255, 255, 255, 0), "Consolas", OutputString.length());
+		//	IsTdCreated = true;
+		//	//ShowMenu = true;
+		//}
+		//if (ShowMenu)
+		//{
+		//	xDrawText(td, OutputString.c_str());
+		//}
 		return f(pDev);
 	}
 

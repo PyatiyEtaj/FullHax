@@ -16,8 +16,8 @@ namespace BPI {
         float FBWalkAnimRate; 
         float LRWalkAnimRate; 
         //------------------
-        float Acceleration;
-        float Friction;
+        float Acceleration;//5650.f
+        float Friction;//5.75f
         float JumpTime;
         float JumpVelocity;
         float JumpLandedWaitTime;
@@ -53,6 +53,10 @@ namespace BPI {
         //---------------------------------
     };
 
+    BasicPlayerInfo* bpiData = NULL;
+
+    DWORD bpiPatchAddress = NULL;
+
     struct BPIForHook {
         PBYTE origFunc;
         PBYTE* backup;
@@ -60,16 +64,7 @@ namespace BPI {
 
     void __changeValue(PBYTE ptr) {
         BasicPlayerInfo* bpi = (BasicPlayerInfo*)ptr;
-        bpi->C4DefuseTime = 5.0f;
-        //bpi->CrosshairColorBlueChangeRate = 0.0f;
-        //bpi->CrosshairColorGreenChangeRate = 0.0f;
-        //bpi->CrosshairColorRedChangeRate = 0.0f;
-        //bpi->DuckWalkRate = 1.0f;
-        //bpi->CrossHairColor = 3;
-        //bpi->WalkRate = 0.90f;
-        //bpi->DuckWalkRate = 1.5f;
-        //bpi->CharacterHiddenRunAlpha = 0.5f;
-        //bpi->CharacterHiddenWalkAlpha = 0.5f;
+        bpi->C4DefuseTime *= 0.85f;
     }
 
     BPIForHook* Init(const std::vector<int>& offs) {
@@ -77,23 +72,21 @@ namespace BPI {
         DWORD h = (DWORD)GetModuleHandleA("CShell.dll");
         typedef PBYTE(*fGetBPIById)(int32_t id);
         fGetBPIById f = (fGetBPIById)((PBYTE)(h + offs[OffsEnum::BPIGetById]));
-
+        bpiPatchAddress = offs[OffsEnum::BPIPatch];
         BPIForHook* bpi = (BPIForHook*)malloc(sizeof(BPIForHook));
         bpi->origFunc = (PBYTE)(h + offs[OffsEnum::BPIGetById]);
         bpi->backup = (PBYTE*)malloc(sizeof(PBYTE));
         bpi->backup[0] = (PBYTE)malloc(BPI_SIZE);
         memcpy(bpi->backup[0], f(0), BPI_SIZE);
 
-        MakeBin(bpi->backup[0], BPI_SIZE, "BPI.data");
-
-        __changeValue(f(0));
-
+        //MakeBin(bpi->backup[0], BPI_SIZE, "BPI.data");
+        bpiData = (BasicPlayerInfo*)f(0);
         return bpi;
     }
 
-    void SetDetour(const std::vector<int>& offs, DWORD adrOhHook)
+    void SetDetour(DWORD adrOhHook)
     {
         DWORD h = (DWORD)GetModuleHandleA("CShell.dll");
-        DetourFunc((PBYTE)(h + offs[OffsEnum::BPIPatch]), adrOhHook);
+        DetourFunc((PBYTE)(h + bpiPatchAddress), adrOhHook);
     }
 };

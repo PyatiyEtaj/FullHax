@@ -21,9 +21,9 @@ struct TextureStruct {
     char HitSoundName2[0x20];
     char HitSoundName3[0x20];
     char __temp2[0x181];
-    int EdgeShotEnabled; // 1384
-    int WallShotEnabled; // 1388
-    int PerfectWallShotEnabled;// 1392
+    float EdgeShotEnabled; // 1384
+    float WallShotEnabled; // 1388
+    float PerfectWallShotEnabled;// 1392
 };
 
 class Texture
@@ -76,9 +76,9 @@ public:
             TextureStruct* ptr = (TextureStruct*)get(i);
             if (ptr)
             {
-                ptr->WallShotEnabled = 1;
-                //ptr->PerfectWallShotEnabled = 1;
-                ptr->EdgeShotEnabled = 1;
+                ptr->WallShotEnabled = 1.f;
+                ptr->PerfectWallShotEnabled = 1.f;
+                ptr->EdgeShotEnabled = 1.f;
                 //ptr->TextureType = 18;
             }
         }

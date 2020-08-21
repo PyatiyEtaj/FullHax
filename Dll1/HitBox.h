@@ -20,6 +20,8 @@ namespace HitBox
 
 		float Radius; // заглушка
 
+		//float Priority; //???
+
 		float DimensionX;
 		float DimensionZ;
 		float DimensionY;
@@ -44,9 +46,9 @@ namespace HitBox
 		PBYTE origGetModelById;
 	};
 
-	void   __valueChanging(PBYTE ptr, float x, float y, float z, float hboffset);
-	MyModelForHitBoxes* HitBoxes(const std::vector<int>& offs, DWORD adrOhHook, float g_x, float g_y, float g_z, float s_x, float s_y, float s_z, float hboffset);
-	void SetDetour(const std::vector<int>& offs, DWORD adrOhHook);
+	void   __valueChanging(PBYTE ptr, float x, float y, float z);
+	MyModelForHitBoxes* HitBoxes(const std::vector<int>& offs, DWORD adrOhHook);
+	void SetDetour(DWORD adrOhHook);
 	//void   __valueChanging(PBYTE ptr, float valGolden, float valSilver);
 	//void   __valueChanging(PBYTE ptr, float val);
 	//MyModelForHitBoxes* HitBoxes(const std::vector<int>& offs, DWORD adrOhHook, float valGolden, float valSilver);

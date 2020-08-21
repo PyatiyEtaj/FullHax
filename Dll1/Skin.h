@@ -18,16 +18,19 @@ public:
     }
     void DumpAllSkins()
     {
+        std::ofstream f("Bytes/skins.txt");
         for (int i = 1; i < 109; i++)
         {
             DWORD name = 0x79C;
             PBYTE ptr = (PBYTE)get(i);
             if (ptr)
             {
-                auto s = "Bytes//skins//" + std::string((char*)(ptr + name)) + "  [" + std::to_string(i) + "].data";
+                f << std::string((char*)(ptr + name)) + "  [" + std::to_string(i) + "] " + "\n";
+                auto s = "Bytes\\skins\\" + std::string((char*)(ptr + name)) + "  [" + std::to_string(i) + "].data";
                 MakeBin(ptr, 3340, s.c_str());
             }
         }
+        f.close();
     }
     void SkinChange(int to = 35, int from = 99/*89 67*/)
     {

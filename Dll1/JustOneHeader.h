@@ -20,5 +20,5 @@ typedef struct _Weapon {
 } Weapon, *PWeapon;
 
 typedef LPVOID(*fGetWpnById)(int16_t);
-typedef int   (*fEsp)(int flag1);
+typedef void  (WINAPI* oGlowESP)(bool);
 typedef void  (*fEspCallEax)(BYTE*);

@@ -90,7 +90,7 @@ void SetPatches(Patcher_c* p, DWORD adrNew)
 
 		int16_t id = *((int16_t*)ptr); //((int16_t)(ptr)[1] << 8) | (int16_t)((ptr)[0]);
 		PWeapon weapon = (PWeapon)VirtualAlloc(NULL, sizeof(Weapon), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-
+		
 		memcpy_s(weapon, sizeof(Weapon), ptr, sizeof(Weapon));
 		p->AllWpnsOriginals[id] = weapon;
 	}
@@ -128,7 +128,7 @@ void AddNewWpnByIds(Patcher_c* p, std::string path, bool izyMode)
 
 	if (src == nullptr || newOne == nullptr) { printf_s("SOOOKA BLYAT!\n"); return; }
 
-	for (int i = 0; i < lengths.size(); i++)
+	for (size_t i = 0; i < lengths.size(); i++)
 	{
 		memcpy_s(src + parts[i], lengths[i], newOne + parts[i], lengths[i]);
 	}
@@ -236,17 +236,14 @@ void AddABanchOfWpns(Patcher_c* p)
 
 void MakeDumpAllWpns(Patcher_c* p, std::string path, bool full)
 {
-	std::ofstream f(path + "weapons.txt");
+	std::ofstream f("Bytes/weapons.txt");
 	for (int i = 0; i < 4000; i++)
 	{
 		auto ptr = (PBYTE)fGetWpnById(p->AdrOfGetWpnById)(i);
 		if (ptr == nullptr) continue;
-		f << std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "]\n";
-		if (full)
-		{
-			auto s = path + "//wpnsdatas//" + std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "].data";
-			MakeBin(ptr, sizeof(Weapon), s.c_str());
-		}		
+		f << std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "] SkinFileName:" + " " + std::string((char*)(ptr + 0x620)) + "\n";
+		/*auto s = path + "Bytes/wpnsdatas/" + std::string((char*)(ptr + 0xE)) + "  [" + std::to_string(i) + "].data";
+		MakeBin(ptr, sizeof(Weapon), s.c_str());*/
 	}
 	f.close();
 }

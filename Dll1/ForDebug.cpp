@@ -97,7 +97,7 @@ bool ForDebug::Dumping(std::vector<BYTE> bytes, std::string subPath, DWORD start
 			PBYTE ptr = FindPattern(bytes, (PBYTE)mbi.BaseAddress, (PBYTE)((DWORD)mbi.BaseAddress + (DWORD)mbi.RegionSize));
 			if (ptr != nullptr)
 			{
-				printf_s("Find pattern in %X\n", ptr);
+				printf_s("Find pattern in %X\n", (unsigned int)ptr);
 				PBYTE pBuffer = new BYTE[mbi.RegionSize];
 				ReadProcessMemory(hProc, mbi.BaseAddress, pBuffer, mbi.RegionSize, 0);
 				std::string name = "D://GamesMailRu//NewDumps//" + subPath + int_to_hex<DWORD>((DWORD)mbi.BaseAddress) + ".dll";

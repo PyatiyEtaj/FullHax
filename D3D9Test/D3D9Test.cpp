@@ -261,7 +261,7 @@ HMODULE GetModule(std::string moduleName)
 			CHAR szModName[MAX_PATH];
 			if (GetModuleFileNameExA(handle, hMods[i], szModName, sizeof(szModName) / sizeof(TCHAR)))
 			{
-				printf_s("%s\n", szModName, moduleName.c_str());
+				printf_s("%s == %s\n", szModName, moduleName.c_str());
 				if (_stricmp(szModName, moduleName.c_str()) == 0)
 				{
 					CloseHandle(handle);
